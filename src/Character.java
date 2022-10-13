@@ -10,13 +10,7 @@ public class Character {
     private int[] position;
     private String image;
     private boolean fighting = false;
-
-    public Character(int hp, int maxHp, int dp, int sp) {
-        this.hp = hp;
-        this.maxHp = maxHp;
-        this.dp = dp;
-        this.sp = sp;
-    }
+    private Character opponent;
 
     public int d6() {
         Random random = new Random();
@@ -33,8 +27,20 @@ public class Character {
         setPosition(position);
     }
 
-    public int strike(Monster monster) {
-        return 2 * d6() + sp;
+    public void strike(Character otherCharacter) {
+        if (2 * d6() + this.getSp() > otherCharacter.getDp()) {
+            otherCharacter.setHp(otherCharacter.getHp() + otherCharacter.getDp() - (2 * d6() + this.getSp()));
+        }
+    }
+
+    public int[] surroundingTiles(int[][] boardPattern, int boardSize, int tileSize) {
+        //Order: upper, lower, left, right
+        return new int[]{
+                (getPosition()[0] == 0) ? 1 : boardPattern[getPosition()[0] - 1][getPosition()[1]],
+                (getPosition()[0] == (boardSize - tileSize) / tileSize) ? 1 : boardPattern[getPosition()[0] + 1][getPosition()[1]],
+                (getPosition()[1] == 0) ? 1 : boardPattern[getPosition()[0]][getPosition()[1] - 1],
+                (getPosition()[1] == (boardSize - tileSize) / tileSize) ? 1 : boardPattern[getPosition()[0]][getPosition()[1] + 1],
+        };
     }
 
     public int getHp() {
@@ -108,5 +114,13 @@ public class Character {
 
     public void setFighting(boolean fighting) {
         this.fighting = fighting;
+    }
+
+    public Character getOpponent() {
+        return opponent;
+    }
+
+    public void setOpponent(Character opponent) {
+        this.opponent = opponent;
     }
 }
